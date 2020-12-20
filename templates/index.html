@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <title>Expert System (El Ex)</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin-bottom:1em;">
+    <a class="navbar-brand" href="#">Expert System (El Ex) for Theorem Proving</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse " id="navbarNavDropdown">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/how_to_use">How to Use</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/theoretical_background">Theoretical Background</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+
+
+  <div class="mr-5 ml-5">
+    <div class="row">
+      <div class="mr-auto mb-3 ml-auto col-11 bg-white p-3 rounded shadow" id="data_div">
+
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Enter the axioms here</span>
+          </div>
+          <textarea class="form-control" id="axioms" aria-label="With textarea"></textarea>
+        </div>
+        <br>
+
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon3">Enter the theorem to prove here</span>
+          </div>
+          <input type="text" id="to_prove" class="form-control" id="basic-url" aria-describedby="basic-addon3">
+        </div>
+        <a class="btn btn-primary" style="color:white;" onclick="proveTheorem();">Prove Theorem</a>
+      </div>
+      <div class="clearfix"></div>
+      <div class="mr-auto ml-auto col-11 bg-white p-3 rounded shadow">
+        <div id="results">
+
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  function build_tree(tableau) {
+    var tree = {};
+    if (Array.isArray(tableau[0])) {
+      tree['name'] = "";
+      tree['children'] = [build_tree(tableau[0][0]), build_tree(tableau[0][1])];
+    } else {
+      tree['name'] = tableau[0];
+      if (tableau.length > 1) {
+        tree['children'] = [build_tree(tableau.slice(1))];
+      }
+    }
+    return tree;
+  }
+
+  function build_tree_html(tableau) {
+    var tree = "";
+    if (Array.isArray(tableau[0])) {
+      tree += "<li><span class='caret'></span>";
+      tree += "<ul class='nested'>";
+      tree += build_tree_html(tableau[0][0]);
+      tree += "</li></ul>";
+      tree += "<li><span class='caret'></span>";
+      tree += "<ul class='nested'>";
+      tree += build_tree_html(tableau[0][1]);
+      tree += "</li></ul>";
+    } else {
+      tree += "<li>" + tableau[0] + "</li>"
+      if (tableau.length > 1) {
+        tree += build_tree_html(tableau.slice(1));
+      }
+    }
+    return tree;
+  }
+
+  function proveTheorem() {
+    var axioms = document.getElementById("axioms").value.split("\n");
+    var to_prove = document.getElementById("to_prove").value;
+    var data = {
+      "axioms": axioms,
+      "to_prove": to_prove
+    };
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", '/tableau', true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(JSON.stringify(data));
+    xhr.onload = function() {
+      var data = JSON.parse(this.responseText);
+      var counter_examples = data["counter_examples"];
+      var tableau = data["tableau"];
+      // Build the tree
+      var tree = "<ul id='myUl'>" + build_tree_html(tableau) + "</ul>";
+
+      if (counter_examples.length == 0) {
+        document.getElementById("results").innerHTML = "<h3>Theorem Proved Successfully by Contradiction</h3>";
+        document.getElementById("results").innerHTML += tree;
+        set_togglers();
+      } else {
+        document.getElementById("results").innerHTML = "<h3>Theorem Disproved by Counterexample</h3>";
+        counter_examples = counter_examples.split(" ");
+        console.log(counter_examples);
+        for(var i = 0; i < counter_examples.length; i++){
+          document.getElementById("results").innerHTML += "<h5>" + counter_examples[i] + "</h5>";
+        }
+        document.getElementById("results").innerHTML += tree;
+        set_togglers();
+      }
+    }
+  }
+
+  function set_togglers() {
+    var toggler = document.getElementsByClassName("caret");
+    var i;
+
+    for (i = 0; i < toggler.length; i++) {
+      toggler[i].addEventListener("click", function() {
+        this.parentElement.querySelector(".nested").classList.toggle("active");
+        this.classList.toggle("caret-down");
+      });
+      toggler[i].parentElement.querySelector(".nested").classList.toggle("active");
+      toggler[i].classList.toggle("caret-down");
+    }
+  }
+</script>
+<style>
+  body {
+    background-color: #eee;
+  }
+
+  .white_block {
+    z-index: 999;
+    background-color: #fff;
+    margin-bottom: 3em;
+  }
+
+
+  .notifications {
+    max-height: 15em;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .appointments {
+    max-height: 15em;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tool_block {}
+
+  .tool_img {
+
+    border-radius: 500px;
+  }
+
+  /* Remove default bullets */
+  ul,
+  #myUL {
+    list-style-type: none;
+  }
+
+  /* Remove margins and padding from the parent ul */
+  #myUL {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Style the caret/arrow */
+  .caret {
+    cursor: pointer;
+    user-select: none;
+    /* Prevent text selection */
+  }
+
+  /* Create the caret/arrow with a unicode, and style it */
+  .caret::before {
+    content: "\25B6";
+    color: black;
+    display: inline-block;
+    margin-right: 6px;
+  }
+
+  /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+  .caret-down::before {
+    transform: rotate(90deg);
+  }
+
+  /* Hide the nested list */
+  .nested {
+    display: none;
+  }
+
+  /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+  .active {
+    display: block;
+  }
+</style>
+
+</html>

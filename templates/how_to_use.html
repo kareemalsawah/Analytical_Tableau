@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <title>Expert System (How to Use)</title>
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-light bg-light" style="margin-bottom:1em;">
+    <a class="navbar-brand" href="/">Expert System (El Ex) for Theorem Proving</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse " id="navbarNavDropdown">
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="#">How to Use</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/theoretical_background">Theoretical Background</a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+
+
+  <div class="mr-5 ml-5">
+    <div class="row">
+      <div class="mr-auto mb-3 ml-auto col-11 bg-white p-3 rounded shadow">
+        <h2>Overview</h2>
+        This application can be used for automated theorem proving or disproving using either proff by contradiction or disproof by counterexample.
+        Note that it currently only supports propositional logic with the ability to add first order logic support in the future.
+        <h2>How to use</h2>
+        To use this application, you need to write a list of axioms and a theorem to prove. The following operations can be used as operators:
+        <ul>
+          <li>~: to perform NOT operation. Ex: ~x, means not x</li>
+          <li>+: to perform OR operation: Ex: x+y, means x OR y</li>
+          <li>*: to perform AND operation: Ex: x+y, means x AND y</li>
+          <li>>: to perform IMPLICATION: Ex: x+y, means x Implies y</li>
+          <li>brackets "(" or ")": Can also be used</li>
+          <li>Variables can have any characters but can't contain any of the above operation characters</li>
+        </ul>
+        <h2>Example Use (Proof by Contradiction)</h2>
+        <h4>Axioms:</h4>
+        <ul>
+          <li>x*y*z+var1</li>
+          <li>y*z</li>
+          <li>var1>>(x+y)</li>
+          <li>~(~(z+x+var1))>>(x+y+z+var1)</li>
+        </ul>
+        <h4>Theorem to prove:</h4>
+        <ul>
+          <li>(~(x*z)>>var1) * (var1+z)</li>
+        </ul>
+        <h4>Result:</h4>
+        <h6>Theorem Proved Successfully by Contradiction</h6>
+        <ul id="myUl">
+          <li>1. ((x*y)*z)+var1 </li>
+          <li>2. y*z </li>
+          <li>3. var1-&gt;x+y </li>
+          <li>4. ~(~((z+x)+var1))-&gt;((x+y)+z)+var1 </li>
+          <li>5. ~((~(x*z)-&gt;var1)*(var1+z)) </li>
+          <li>6. y By expanding 2.</li>
+          <li>7. z By expanding 2.</li>
+          <li><span class="caret caret-down"></span>
+            <ul class="nested active">
+              <li>8.0. (x*y)*z Left branch of 1.</li>
+              <li>8.1. x*y By expanding 8.0.</li>
+              <li>8.2. z By expanding 8.0.</li>
+              <li>8.3. x By expanding 8.1.</li>
+              <li>8.4. y By expanding 8.1.</li>
+              <li><span class="caret caret-down"></span>
+                <ul class="nested active">
+                  <li>8.5.0. var1 Left branch of 3.</li>
+                  <li><span class="caret caret-down"></span>
+                    <ul class="nested active">
+                      <li>8.5.1.0. ~(~((z+x)+var1)) Left branch of 4.</li>
+                      <li>8.5.1.1. (z+x)+var1 By expanding 8.5.1.0.</li>
+                      <li><span class="caret caret-down"></span>
+                        <ul class="nested active">
+                          <li>8.5.1.2.0. ~(~(x*z)-&gt;var1) Left branch of 5.</li>
+                          <li>8.5.1.2.1. ~(x*z) By expanding 8.5.1.2.0.</li>
+                          <li>8.5.1.2.2. ~var1 By expanding 8.5.1.2.0.</li>
+                          <li>8.5.1.2.3. Conflict in branch between statements 8.5.0. var1 and 8.5.1.2.2. ~var1 </li>
+                        </ul>
+                      </li>
+                      <li><span class="caret caret-down"></span>
+                        <ul class="nested active">
+                          <li>8.5.1.3.0. ~(var1+z) Right branch of 5.</li>
+                          <li>8.5.1.3.1. ~var1 By expanding 8.5.1.3.0.</li>
+                          <li>8.5.1.3.2. ~z By expanding 8.5.1.3.0.</li>
+                          <li>8.5.1.3.3. Conflict in branch between statements 8.5.0. var1 and 8.5.1.3.1. ~var1 </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <li><span class="caret caret-down"></span>
+                    <ul class="nested active">
+                      <li>8.5.2.0. ~(((x+y)+z)+var1) Right branch of 4.</li>
+                      <li>8.5.2.1. ~((x+y)+z) By expanding 8.5.2.0.</li>
+                      <li>8.5.2.2. ~var1 By expanding 8.5.2.0.</li>
+                      <li>8.5.2.3. ~(x+y) By expanding 8.5.2.1.</li>
+                      <li>8.5.2.4. ~z By expanding 8.5.2.1.</li>
+                      <li>8.5.2.5. ~x By expanding 8.5.2.3.</li>
+                      <li>8.5.2.6. ~y By expanding 8.5.2.3.</li>
+                      <li>8.5.2.7. Conflict in branch between statements 8.5.0. var1 and 8.5.2.2. ~var1 </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><span class="caret caret-down"></span>
+                <ul class="nested active">
+                  <li>8.6.0. ~(x+y) Right branch of 3.</li>
+                  <li>8.6.1. ~x By expanding 8.6.0.</li>
+                  <li>8.6.2. ~y By expanding 8.6.0.</li>
+                  <li>8.6.3. Conflict in branch between statements 8.3. x and 8.6.1. ~x </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+          <li><span class="caret caret-down"></span>
+            <ul class="nested active">
+              <li>9.0. var1 Right branch of 1.</li>
+              <li><span class="caret caret-down"></span>
+                <ul class="nested active">
+                  <li>9.1.0. var1 Left branch of 3.</li>
+                  <li><span class="caret caret-down"></span>
+                    <ul class="nested active">
+                      <li>9.1.1.0. ~(~((z+x)+var1)) Left branch of 4.</li>
+                      <li>9.1.1.1. (z+x)+var1 By expanding 9.1.1.0.</li>
+                      <li><span class="caret caret-down"></span>
+                        <ul class="nested active">
+                          <li>9.1.1.2.0. ~(~(x*z)-&gt;var1) Left branch of 5.</li>
+                          <li>9.1.1.2.1. ~(x*z) By expanding 9.1.1.2.0.</li>
+                          <li>9.1.1.2.2. ~var1 By expanding 9.1.1.2.0.</li>
+                          <li>9.1.1.2.3. Conflict in branch between statements 9.0. var1 and 9.1.1.2.2. ~var1 </li>
+                        </ul>
+                      </li>
+                      <li><span class="caret caret-down"></span>
+                        <ul class="nested active">
+                          <li>9.1.1.3.0. ~(var1+z) Right branch of 5.</li>
+                          <li>9.1.1.3.1. ~var1 By expanding 9.1.1.3.0.</li>
+                          <li>9.1.1.3.2. ~z By expanding 9.1.1.3.0.</li>
+                          <li>9.1.1.3.3. Conflict in branch between statements 9.0. var1 and 9.1.1.3.1. ~var1 </li>
+                        </ul>
+                      </li>
+                    </ul>
+                  </li>
+                  <li><span class="caret caret-down"></span>
+                    <ul class="nested active">
+                      <li>9.1.2.0. ~(((x+y)+z)+var1) Right branch of 4.</li>
+                      <li>9.1.2.1. ~((x+y)+z) By expanding 9.1.2.0.</li>
+                      <li>9.1.2.2. ~var1 By expanding 9.1.2.0.</li>
+                      <li>9.1.2.3. ~(x+y) By expanding 9.1.2.1.</li>
+                      <li>9.1.2.4. ~z By expanding 9.1.2.1.</li>
+                      <li>9.1.2.5. ~x By expanding 9.1.2.3.</li>
+                      <li>9.1.2.6. ~y By expanding 9.1.2.3.</li>
+                      <li>9.1.2.7. Conflict in branch between statements 9.0. var1 and 9.1.2.2. ~var1 </li>
+                    </ul>
+                  </li>
+                </ul>
+              </li>
+              <li><span class="caret caret-down"></span>
+                <ul class="nested active">
+                  <li>9.2.0. ~(x+y) Right branch of 3.</li>
+                  <li>9.2.1. ~x By expanding 9.2.0.</li>
+                  <li>9.2.2. ~y By expanding 9.2.0.</li>
+                  <li>9.2.3. Conflict in branch between statements 6. y and 9.2.2. ~y </li>
+                </ul>
+              </li>
+            </ul>
+          </li>
+        </ul>
+        <h2>Example Use (Disproof by Counterexample)</h2>
+        <h4>Axioms:</h4>
+        <ul>
+          <li>a*y</li>
+        </ul>
+        <h4>Theorem to prove:</h4>
+        <ul>
+          <li>~(a+y)</li>
+        </ul>
+        <h4>Result:</h4>
+        <h6>Theorem Disproved by Counterexample</h6>
+        y=True<br>
+        a=True<br>
+        <ul id="myUl">
+          <li>1. a*y </li>
+          <li>2. ~(~(a+y)) </li>
+          <li>3. a By expanding 1.</li>
+          <li>4. y By expanding 1.</li>
+          <li>5. a+y By expanding 2.</li>
+          <li><span class="caret caret-down"></span>
+            <ul class="nested active">
+              <li>6.0. a Left branch of 5.</li>
+              <li>6.1. Branch open, Counter Example found </li>
+            </ul>
+          </li>
+          <li><span class="caret caret-down"></span>
+            <ul class="nested active">
+              <li>7.0. y Right branch of 5.</li>
+              <li>7.1. Branch open, Counter Example found </li>
+            </ul>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</body>
+<script>
+  function set_togglers() {
+    var toggler = document.getElementsByClassName("caret");
+    var i;
+
+    for (i = 0; i < toggler.length; i++) {
+      toggler[i].addEventListener("click", function() {
+        this.parentElement.querySelector(".nested").classList.toggle("active");
+        this.classList.toggle("caret-down");
+      });
+      toggler[i].parentElement.querySelector(".nested").classList.toggle("active");
+      toggler[i].classList.toggle("caret-down");
+    }
+  }
+  set_togglers();
+</script>
+<style>
+  body {
+    background-color: #eee;
+  }
+
+  .white_block {
+    z-index: 999;
+    background-color: #fff;
+    margin-bottom: 3em;
+  }
+
+
+  .notifications {
+    max-height: 15em;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .appointments {
+    max-height: 15em;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tool_block {}
+
+  .tool_img {
+
+    border-radius: 500px;
+  }
+
+  /* Remove default bullets */
+  ul,
+  #myUL {
+    list-style-type: none;
+  }
+
+  /* Remove margins and padding from the parent ul */
+  #myUL {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Style the caret/arrow */
+  .caret {
+    cursor: pointer;
+    user-select: none;
+    /* Prevent text selection */
+  }
+
+  /* Create the caret/arrow with a unicode, and style it */
+  .caret::before {
+    content: "\25B6";
+    color: black;
+    display: inline-block;
+    margin-right: 6px;
+  }
+
+  /* Rotate the caret/arrow icon when clicked on (using JavaScript) */
+  .caret-down::before {
+    transform: rotate(90deg);
+  }
+
+  /* Hide the nested list */
+  .nested {
+    display: none;
+  }
+
+  /* Show the nested list when the user clicks on the caret/arrow (with JavaScript) */
+  .active {
+    display: block;
+  }
+</style>
+
+</html>
